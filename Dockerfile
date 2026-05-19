@@ -1,4 +1,4 @@
-FROM gradle:9.1.0-jdk17-corretto-al2023 AS builder
+FROM gradle:9.5.1-jdk17-corretto-al2023 AS builder
 
 WORKDIR /build
 COPY ./ /build
