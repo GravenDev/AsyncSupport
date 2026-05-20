@@ -1,4 +1,4 @@
-name: AsyncSupport CI/CD
+name: Build & Release
 
 on:
   push:
@@ -6,7 +6,10 @@ on:
   pull_request:
 
 jobs:
-  ci:
+  build:
+    name: Build
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,6 +30,7 @@ jobs:
       - name: Execute Gradle build
         run: ./gradlew build
 
+      # TODO replace with artifact upload
       - name: Cache everything for CD
         if: github.ref_type == 'tag'
         uses: actions/cache@v5
@@ -34,8 +38,11 @@ jobs:
           path: .
           key: ci-data
 
-  cd:
-    needs: ci
+  release:
+    name: Publish release
+    permissions:
+      contents: write
+    needs: build
     runs-on: ubuntu-latest
     if: github.ref_type == 'tag' && github.event_name == 'push'
 
