@@ -22,7 +22,7 @@ jobs:
           distribution: "temurin"
 
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Check code formatting
         run: ./gradlew spotlessCheck
