@@ -57,13 +57,13 @@ jobs:
         with: *artifact-args
 
       - name: Create release zip file
-        uses: TheDoctor0/zip-release@0.7.6
+        uses: TheDoctor0/zip-release@b57d897cb5d60cb78b51a507f63fa184cfe35554 # v0.7.6
         with:
           filename: "GravenSupport-${{ github.sha }}.zip"
           directory: ./gh_release
 
       - name: Publish release '${{ github.ref_name }}'
-        uses: "marvinpinto/action-automatic-releases@latest"
+        uses: marvinpinto/action-automatic-releases@d68defdd11f9dcc7f52f35c1b7c236ee7513bcc1 # 'latest' tag. Warn: This action is archived.
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: "latest"
