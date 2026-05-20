@@ -30,13 +30,18 @@ jobs:
       - name: Execute Gradle build
         run: ./gradlew build
 
-      # TODO replace with artifact upload
-      - name: Cache everything for CD
+      - name: Prepare files for release
         if: github.ref_type == 'tag'
-        uses: actions/cache@v5
-        with:
-          path: .
-          key: ci-data
+        run: |
+          mkdir gh_release
+          cp LICENSE.md build/resources/main/config.default.yml build/libs/*-all.jar gh_release
+
+      - name: Upload artifact for release
+        if: github.ref_type == 'tag'
+        uses: actions/upload-artifact@v7
+        with: &artifact-args
+          name: release-artifacts
+          path: gh_release
 
   release:
     name: Publish release
@@ -47,16 +52,9 @@ jobs:
     if: github.ref_type == 'tag' && github.event_name == 'push'
 
     steps:
-      - name: Restore data from cache
-        uses: actions/cache@v5
-        with:
-          path: .
-          key: ci-data
-
-      - name: Prepare files for release
-        run: |
-          mkdir gh_release
-          cp LICENSE.md build/resources/main/config.default.yml build/libs/*-all.jar gh_release
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with: *artifact-args
 
       - name: Create release zip file
         uses: TheDoctor0/zip-release@0.7.6
