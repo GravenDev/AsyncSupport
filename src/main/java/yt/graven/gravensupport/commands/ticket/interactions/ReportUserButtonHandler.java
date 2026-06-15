@@ -14,9 +14,9 @@ import yt.graven.gravensupport.utils.interactions.InteractionAction;
 @RequiredArgsConstructor
 public class ReportUserButtonHandler implements InteractionAction<ButtonInteractionEvent> {
 
-    @Override
-    public void run(ButtonInteractionEvent event) throws TicketException, IOException {
-        // spotless:off
+  @Override
+  public void run(ButtonInteractionEvent event) throws TicketException, IOException {
+    // spotless:off
         Modal modal = Modal.create("op-report-user", "Signaler un utilisateur")
                 .addActionRow(TextInput.create("user-id", "ID de l'utilisateur", TextInputStyle.SHORT)
                         .setPlaceholder("Identifiant de l'utilisateur")
@@ -33,6 +33,6 @@ public class ReportUserButtonHandler implements InteractionAction<ButtonInteract
                 .build();
         // spotless:on
 
-        event.replyModal(modal).queue();
-    }
+    event.replyModal(modal).queue();
+  }
 }

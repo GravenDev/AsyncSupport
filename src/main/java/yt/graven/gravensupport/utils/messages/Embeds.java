@@ -17,31 +17,32 @@ import yt.graven.gravensupport.utils.messages.builder.data.TicketMessage;
 @Component
 public class Embeds {
 
-    public EmbedBuilder error(String message) {
-        return new EmbedBuilder().setColor(Color.RED).addField("Erreur :", "> " + message, false);
-    }
+  public EmbedBuilder error(String message) {
+    return new EmbedBuilder().setColor(Color.RED).addField("Erreur :", "> " + message, false);
+  }
 
-    public TicketMessage errorMessage(String message) {
-        return MessageFactory.create().addEmbeds(error(message));
-    }
+  public TicketMessage errorMessage(String message) {
+    return MessageFactory.create().addEmbeds(error(message));
+  }
 
-    public EmbedBuilder success(String message) {
-        return new EmbedBuilder().setColor(Color.GREEN).setTitle("Succès").setDescription(message);
-    }
+  public EmbedBuilder success(String message) {
+    return new EmbedBuilder().setColor(Color.GREEN).setTitle("Succès").setDescription(message);
+  }
 
-    public TicketMessage successMessage(String message) {
-        return MessageFactory.create().addEmbeds(success(message));
-    }
+  public TicketMessage successMessage(String message) {
+    return MessageFactory.create().addEmbeds(success(message));
+  }
 
-    public EmbedBuilder ticketAlreadyExists(boolean personal) {
-        return error(
-                personal
-                        ? "Vous avez déjà un ticket ouvert avec la modération."
-                        : "Un ticket est déjà ouvert avec cet utilisateur.");
-    }
+  public EmbedBuilder ticketAlreadyExists(boolean personal) {
+    return error(
+        personal
+            ? "Vous avez déjà un ticket ouvert avec la modération."
+            : "Un ticket est déjà ouvert avec cet utilisateur.");
+  }
 
-    public TicketMessage ticketAlreadyExistsMessage(GuildMessageChannel ticketChannel, boolean personal) {
-        // spotless:off
+  public TicketMessage ticketAlreadyExistsMessage(
+      GuildMessageChannel ticketChannel, boolean personal) {
+    // spotless:off
         return MessageFactory.create()
                 .addEmbeds(ticketAlreadyExists(personal))
                 .addActionRow(actionRow -> actionRow
@@ -51,16 +52,19 @@ public class Embeds {
                         )
                 );
         // spotless:on
-    }
+  }
 
-    public TicketMessage ping(PingComputer manager) {
-        EmbedBuilder embed = new EmbedBuilder()
-                .setTitle(":ping_pong: Pong !")
-                .setColor(Color.green)
-                .addField("↔️ Ping du Gateway :", "\n**`%s`** ms".formatted(manager.getGatewayPing()), false)
-                .addField("➡️ Ping de l'API :", "\n**`%s`** ms".formatted(manager.getRestPing()), false);
+  public TicketMessage ping(PingComputer manager) {
+    EmbedBuilder embed =
+        new EmbedBuilder()
+            .setTitle(":ping_pong: Pong !")
+            .setColor(Color.green)
+            .addField(
+                "↔️ Ping du Gateway :", "\n**`%s`** ms".formatted(manager.getGatewayPing()), false)
+            .addField(
+                "➡️ Ping de l'API :", "\n**`%s`** ms".formatted(manager.getRestPing()), false);
 
-        // spotless:off
+    // spotless:off
         return MessageFactory.create()
                 .addEmbeds(embed)
                 .addActionRow(actionRow -> actionRow
@@ -71,111 +75,112 @@ public class Embeds {
                         )
                 );
         // spotless:on
-    }
+  }
 
-    public EmbedBuilder noTicketAttached() {
-        return error("Impossible de trouver un ticket rattaché à ce salon");
-    }
+  public EmbedBuilder noTicketAttached() {
+    return error("Impossible de trouver un ticket rattaché à ce salon");
+  }
 
-    public TicketMessage noTicketAttachedMessage() {
-        return MessageFactory.create().addEmbeds(noTicketAttached());
-    }
+  public TicketMessage noTicketAttachedMessage() {
+    return MessageFactory.create().addEmbeds(noTicketAttached());
+  }
 
-    public EmbedBuilder proposeOpening(String sentEmote) {
-        return new EmbedBuilder()
-                .setAuthor("Message automatique")
-                .setTitle("Ticket en cours d'ouverture !")
-                .setDescription(
-                        """
+  public EmbedBuilder proposeOpening(String sentEmote) {
+    return new EmbedBuilder()
+        .setAuthor("Message automatique")
+        .setTitle("Ticket en cours d'ouverture !")
+        .setDescription(
+            """
                                 Votre demande d'ouverture de ticket a bien été prise en compte.
                                 Veuillez cependant confirmer que vous avez pris connaissance des règles de ceux-cis.
                                 """)
-                .addField(
-                        "✉️ Règles des tickets :",
-                        """
+        .addField(
+            "✉️ Règles des tickets :",
+            """
                                 - Les messages que vous envoyez ne peuvent ni être édités, ni être supprimés.
                                 - Tous les messages envoyés sont enregistrés.
                                 - Les règles du discord `Graven - Développement` sont également applicables dans les tickets.
                                 - Les tickets ouverts sans justification seront sanctionnés.
                                 - Les tickets sont destinés à la modération. Les demandes d'aides sont susceptibles d'être sanctionnées.
                                 """,
-                        false)
-                .addField(
-                        "❔ Utilisation :",
-                        String.format(
-                                """
+            false)
+        .addField(
+            "❔ Utilisation :",
+            String.format(
+                """
                                         - Pour transmettre un message, vous avez juste à envoyer un message en privé avec ce bot.
                                         - Les réponses de la modération se feront par le biais de ces message privés.
                                         - Si votre message est transmis, la réaction %s sera ajoutée à vos messages
                                         """,
-                                sentEmote),
-                        false)
-                .addField(
-                        "✨ Terminer l'ouverture du ticket",
-                        """
+                sentEmote),
+            false)
+        .addField(
+            "✨ Terminer l'ouverture du ticket",
+            """
                                 Afin de terminer l'ouverture du ticket, merci de sélectionner ci-dessous la raison de l'ouverture de votre ticket.
                                 Vous serez ensuite recontacté dans les plus brefs délais.
                                 """,
-                        false)
-                .setColor(Color.GREEN);
-    }
+            false)
+        .setColor(Color.GREEN);
+  }
 
-    public EmbedBuilder forceOpening(String sentEmote, TicketOpeningReason reason) {
-        String reasonAsString =
-                switch (reason) {
-                    case TicketOpeningReason.Empty r -> "Aucune raison n'a été spécifiée";
-                    case TicketOpeningReason.Simple r -> r.reason();
-                    case TicketOpeningReason.UserReport r -> "Signalement utilisateur à cause de : %s"
-                            .formatted(r.reportReason());
-                };
-        return new EmbedBuilder()
-                .setAuthor("Message automatique")
-                .setTitle("Ticket ouvert !")
-                .setDescription(
-                        """
+  public EmbedBuilder forceOpening(String sentEmote, TicketOpeningReason reason) {
+    String reasonAsString =
+        switch (reason) {
+          case TicketOpeningReason.Empty r -> "Aucune raison n'a été spécifiée";
+          case TicketOpeningReason.Simple r -> r.reason();
+          case TicketOpeningReason.UserReport r ->
+              "Signalement utilisateur à cause de : %s".formatted(r.reportReason());
+        };
+    return new EmbedBuilder()
+        .setAuthor("Message automatique")
+        .setTitle("Ticket ouvert !")
+        .setDescription(
+            """
                                 La modération a ouvert un ticket vous impliquant.
                                 Vous pouvez désormais discuter avec le staff en message privé avec le bot
                                 """)
-                .addField(
-                        "✉️ Règles des tickets :",
-                        """
+        .addField(
+            "✉️ Règles des tickets :",
+            """
                                 - Les messages que vous envoyez ne peuvent ni être édités, ni être supprimés.
                                 - Tous les messages envoyés sont enregistrés.
                                 - Les règles du discord `Graven - Développement` sont également applicables dans les tickets.
                                 """,
-                        false)
-                .addField(
-                        "❔ Utilisation :",
-                        String.format(
-                                """
+            false)
+        .addField(
+            "❔ Utilisation :",
+            String.format(
+                """
                                         - Pour transmettre un message, vous avez juste à envoyer un message en privé avec ce bot.
                                         - Les réponses de la modération se feront par le biais de ces message privés.
                                         - Si votre message est transmis, la réaction %s sera ajoutée à vos messages
                                         """,
-                                sentEmote),
-                        false)
-                .addField(
-                        "⚠️ Avertissement :",
-                        """
+                sentEmote),
+            false)
+        .addField(
+            "⚠️ Avertissement :",
+            """
                                 Ce ticket a été ouvert par la modération pour la raison suivante :
                                 ```
                                 %s
                                 ```
                                 """
-                                .formatted(reasonAsString),
-                        false)
-                .setColor(Color.ORANGE);
-    }
+                .formatted(reasonAsString),
+            false)
+        .setColor(Color.ORANGE);
+  }
 
-    public EmbedBuilder ticketOpening(boolean forced, User by, User from, TextChannel channel, String reason) {
-        return new EmbedBuilder()
-                .setTitle("Ticket ouvert")
-                .setColor(forced ? Color.CYAN : Color.GREEN)
-                .setTimestamp(Instant.now())
-                .setThumbnail(from.getAvatarUrl())
-                .addField(
-                        "ℹ️ Détails :",
-                        """
+  public EmbedBuilder ticketOpening(
+      boolean forced, User by, User from, TextChannel channel, String reason) {
+    return new EmbedBuilder()
+        .setTitle("Ticket ouvert")
+        .setColor(forced ? Color.CYAN : Color.GREEN)
+        .setTimestamp(Instant.now())
+        .setThumbnail(from.getAvatarUrl())
+        .addField(
+            "ℹ️ Détails :",
+            """
                                 > **Identifiant de l'utilisateur**
                                 %s
 
@@ -190,35 +195,35 @@ public class Embeds {
 
                                 %s
                                 """
-                                .formatted(
-                                        from.getId(),
-                                        from.getAsMention(),
-                                        from.getAsTag(),
-                                        channel.getAsMention(),
-                                        channel.getName(),
-                                        reason,
-                                        forced
-                                                ? String.format(
-                                                        """
+                .formatted(
+                    from.getId(),
+                    from.getAsMention(),
+                    from.getAsTag(),
+                    channel.getAsMention(),
+                    channel.getName(),
+                    reason,
+                    forced
+                        ? String.format(
+                            """
                                                  🛂 **Ouvert par**
                                                  %s (`@%s`)
 
                                                 """,
-                                                        by.getAsMention(), by.getAsTag())
-                                                : ""),
-                        false);
-    }
+                            by.getAsMention(), by.getAsTag())
+                        : ""),
+            false);
+  }
 
-    public EmbedBuilder ticketClosing(User from, String jumpUrl) {
-        return new EmbedBuilder()
-                .setTitle("Ticket fermé")
-                .setColor(Color.RED)
-                .setTimestamp(Instant.now())
-                .setThumbnail(from.getAvatarUrl())
-                .addField(
-                        "ℹ️ Détails :",
-                        String.format(
-                                """
+  public EmbedBuilder ticketClosing(User from, String jumpUrl) {
+    return new EmbedBuilder()
+        .setTitle("Ticket fermé")
+        .setColor(Color.RED)
+        .setTimestamp(Instant.now())
+        .setThumbnail(from.getAvatarUrl())
+        .addField(
+            "ℹ️ Détails :",
+            String.format(
+                """
                                         > **Identifiant de l'utilisateur**
                                         %s
 
@@ -228,7 +233,7 @@ public class Embeds {
                                         :spiral_note_pad: **Rapport**
                                         [Lien du rapport](%s)
                                         """,
-                                from.getId(), from.getAsMention(), from.getAsTag(), jumpUrl),
-                        false);
-    }
+                from.getId(), from.getAsMention(), from.getAsTag(), jumpUrl),
+            false);
+  }
 }

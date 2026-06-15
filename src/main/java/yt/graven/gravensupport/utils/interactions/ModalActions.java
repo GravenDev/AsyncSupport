@@ -14,19 +14,18 @@ import yt.graven.gravensupport.utils.exceptions.TicketException;
 
 @RequiredArgsConstructor
 public enum ModalActions {
-    OPENING_REASON("op-other-reason", (context) -> context.getBean(OtherOpeningReasonHandler.class)),
-    REPORT_USER_MODAL("op-report-user", (context) -> context.getBean(ReportUserModalHandler.class));
+  OPENING_REASON("op-other-reason", (context) -> context.getBean(OtherOpeningReasonHandler.class)),
+  REPORT_USER_MODAL("op-report-user", (context) -> context.getBean(ReportUserModalHandler.class));
 
-    private final String actionId;
-    private final Function<ApplicationContext, InteractionAction<ModalInteractionEvent>> handler;
+  private final String actionId;
+  private final Function<ApplicationContext, InteractionAction<ModalInteractionEvent>> handler;
 
-    public void run(ApplicationContext context, ModalInteractionEvent event) throws TicketException, IOException {
-        handler.apply(context).run(event);
-    }
+  public void run(ApplicationContext context, ModalInteractionEvent event)
+      throws TicketException, IOException {
+    handler.apply(context).run(event);
+  }
 
-    public static Optional<ModalActions> getFromActionId(String actionId) {
-        return Arrays.stream(values())
-                .filter(a -> Objects.equals(a.actionId, actionId))
-                .findFirst();
-    }
+  public static Optional<ModalActions> getFromActionId(String actionId) {
+    return Arrays.stream(values()).filter(a -> Objects.equals(a.actionId, actionId)).findFirst();
+  }
 }

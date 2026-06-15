@@ -39,123 +39,133 @@ import yt.graven.gravensupport.utils.messages.builder.data.TicketActionRow;
 @RequiredArgsConstructor
 public class EventReceiver extends ListenerAdapter {
 
-    private final ApplicationContext context;
-    private final CommandRegistry registry;
-    private final PingCommand pingCommand;
-    private final TicketCommand ticketCommand;
-    private final CloseCommand closeCommand;
-    private final IdCommand idCommand;
-    private final YamlConfiguration config;
-    private final TicketManager ticketManager;
-    private final Embeds embeds;
+  private final ApplicationContext context;
+  private final CommandRegistry registry;
+  private final PingCommand pingCommand;
+  private final TicketCommand ticketCommand;
+  private final CloseCommand closeCommand;
+  private final IdCommand idCommand;
+  private final YamlConfiguration config;
+  private final TicketManager ticketManager;
+  private final Embeds embeds;
 
-    private boolean loaded = false;
+  private boolean loaded = false;
 
-    @Override
-    public void onReady(@NotNull ReadyEvent event) {
-        if (loaded) return;
+  @Override
+  public void onReady(@NotNull ReadyEvent event) {
+    if (loaded) return;
 
-        log.info("Bot preparing - Initializing commands...");
-        registry.loadAll();
-        log.info("Bot ready - Commands initialized!");
+    log.info("Bot preparing - Initializing commands...");
+    registry.loadAll();
+    log.info("Bot ready - Commands initialized!");
 
-        try {
-            ticketManager.load(event.getJDA());
-        } catch (TicketException e) {
-            log.error("", e);
-        }
-
-        loaded = true;
+    try {
+      ticketManager.load(event.getJDA());
+    } catch (TicketException e) {
+      log.error("", e);
     }
 
-    @Override
-    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        registry.getCommandByName(event.getName()).ifPresent(cmd -> {
-            try {
+    loaded = true;
+  }
+
+  @Override
+  public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+    registry
+        .getCommandByName(event.getName())
+        .ifPresent(
+            cmd -> {
+              try {
                 cmd.run(event);
-            } catch (TicketException | IOException | CommandCancelledException e) {
+              } catch (TicketException | IOException | CommandCancelledException e) {
                 throw new RuntimeException(e);
-            }
-        });
+              }
+            });
+  }
+
+  @Override
+  public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+    if (event.getAuthor().isBot() || event.getAuthor().isSystem()) return;
+
+    /*
+     * Check for a dm from a member for a potential forward to a ticket.
+     */
+    if (event.getChannelType() == ChannelType.PRIVATE) {
+      if (!ticketManager.exists(event.getAuthor())) return;
+      Ticket ticket =
+          ticketManager
+              .get(event.getAuthor())
+              .orElseThrow(() -> new RuntimeException("Ticket could not be found but exists"));
+
+      if (!ticket.isOpened()) return;
+
+      ticket.sendToTicket(event.getMessage());
+      return;
     }
 
-    @Override
-    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        if (event.getAuthor().isBot() || event.getAuthor().isSystem()) return;
+    /*
+     * Check for a message in a ticket channel
+     */
+    if (event.getChannelType() == ChannelType.TEXT) {
 
-        /*
-         * Check for a dm from a member for a potential forward to a ticket.
-         */
-        if (event.getChannelType() == ChannelType.PRIVATE) {
-            if (!ticketManager.exists(event.getAuthor())) return;
-            Ticket ticket = ticketManager
-                    .get(event.getAuthor())
-                    .orElseThrow(() -> new RuntimeException("Ticket could not be found but exists"));
+      if (event.getMessage().getContentRaw().isEmpty()) return;
 
-            if (!ticket.isOpened()) return;
+      if (!event.getMessage().getContentRaw().startsWith("'")) return;
 
-            ticket.sendToTicket(event.getMessage());
-            return;
-        }
+      TextChannel textChannel = event.getChannel().asTextChannel();
+      if (!Objects.equals(
+          textChannel.getParentCategoryId(),
+          config.getString("config.ticket_guild.tickets_category"))) return;
 
-        /*
-         * Check for a message in a ticket channel
-         */
-        if (event.getChannelType() == ChannelType.TEXT) {
+      Optional<Ticket> ticket = ticketManager.get(MiscUtil.parseLong(textChannel.getTopic()));
+      if (ticket.isEmpty()) {
+        embeds
+            .noTicketAttachedMessage()
+            .addActionRow(TicketActionRow::addDeleteButton)
+            .send(event.getChannel())
+            .queue();
+        return;
+      }
 
-            if (event.getMessage().getContentRaw().isEmpty()) return;
-
-            if (!event.getMessage().getContentRaw().startsWith("'")) return;
-
-            TextChannel textChannel = event.getChannel().asTextChannel();
-            if (!Objects.equals(
-                    textChannel.getParentCategoryId(), config.getString("config.ticket_guild.tickets_category")))
-                return;
-
-            Optional<Ticket> ticket = ticketManager.get(MiscUtil.parseLong(textChannel.getTopic()));
-            if (ticket.isEmpty()) {
-                embeds.noTicketAttachedMessage()
-                        .addActionRow(TicketActionRow::addDeleteButton)
-                        .send(event.getChannel())
-                        .queue();
-                return;
-            }
-
-            ticket.get().sendToUser(event.getMessage());
-        }
+      ticket.get().sendToUser(event.getMessage());
     }
+  }
 
-    @Override
-    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-        ButtonActions.getFromActionId(event.getButton().getId().split(";")[0]).ifPresent(a -> {
-            try {
+  @Override
+  public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+    ButtonActions.getFromActionId(event.getButton().getId().split(";")[0])
+        .ifPresent(
+            a -> {
+              try {
                 a.run(context, event);
-            } catch (TicketException | IOException e) {
+              } catch (TicketException | IOException e) {
                 log.error("", e);
-            }
-        });
-    }
+              }
+            });
+  }
 
-    @Override
-    public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
-        SelectionMenuActions.getFromActionId(event.getSelectMenu().getId().split(";")[0])
-                .ifPresent(a -> {
-                    try {
-                        a.run(context, event);
-                    } catch (TicketException | IOException e) {
-                        log.error("", e);
-                    }
-                });
-    }
-
-    @Override
-    public void onModalInteraction(@NotNull ModalInteractionEvent event) {
-        ModalActions.getFromActionId(event.getModalId().split(";")[0]).ifPresent(a -> {
-            try {
+  @Override
+  public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
+    SelectionMenuActions.getFromActionId(event.getSelectMenu().getId().split(";")[0])
+        .ifPresent(
+            a -> {
+              try {
                 a.run(context, event);
-            } catch (TicketException | IOException e) {
+              } catch (TicketException | IOException e) {
                 log.error("", e);
-            }
-        });
-    }
+              }
+            });
+  }
+
+  @Override
+  public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+    ModalActions.getFromActionId(event.getModalId().split(";")[0])
+        .ifPresent(
+            a -> {
+              try {
+                a.run(context, event);
+              } catch (TicketException | IOException e) {
+                log.error("", e);
+              }
+            });
+  }
 }

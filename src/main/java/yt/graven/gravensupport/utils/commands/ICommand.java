@@ -8,9 +8,10 @@ import yt.graven.gravensupport.utils.exceptions.TicketException;
 
 public interface ICommand {
 
-    String getName();
+  String getName();
 
-    SlashCommandData getSlashCommandData();
+  SlashCommandData getSlashCommandData();
 
-    void run(SlashCommandInteractionEvent event) throws TicketException, IOException, CommandCancelledException;
+  void run(SlashCommandInteractionEvent event)
+      throws TicketException, IOException, CommandCancelledException;
 }

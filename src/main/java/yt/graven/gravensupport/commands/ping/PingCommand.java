@@ -12,25 +12,23 @@ import yt.graven.gravensupport.utils.messages.Embeds;
 @Command
 @RequiredArgsConstructor
 public class PingCommand implements ICommand {
-    private final PingComputer pingComputer;
+  private final PingComputer pingComputer;
 
-    private final Embeds embeds;
+  private final Embeds embeds;
 
-    @Override
-    public String getName() {
-        return "ping";
-    }
+  @Override
+  public String getName() {
+    return "ping";
+  }
 
-    @Override
-    public SlashCommandData getSlashCommandData() {
-        return Commands.slash("ping", "Calcule la latence du bot")
-                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
-    }
+  @Override
+  public SlashCommandData getSlashCommandData() {
+    return Commands.slash("ping", "Calcule la latence du bot")
+        .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
+  }
 
-    @Override
-    public void run(SlashCommandInteractionEvent event) {
-        pingComputer
-                .update()
-                .thenAccept(ignored -> embeds.ping(pingComputer).reply(event).queue());
-    }
+  @Override
+  public void run(SlashCommandInteractionEvent event) {
+    pingComputer.update().thenAccept(ignored -> embeds.ping(pingComputer).reply(event).queue());
+  }
 }

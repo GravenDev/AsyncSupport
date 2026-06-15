@@ -10,22 +10,23 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PingComputer {
 
-    private final JDA client;
+  private final JDA client;
 
-    @Getter
-    private long restPing;
+  @Getter private long restPing;
 
-    @Getter
-    private long gatewayPing;
+  @Getter private long gatewayPing;
 
-    public CompletableFuture<Void> update() {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        client.getRestPing().queue(ping -> {
-            this.gatewayPing = client.getGatewayPing();
-            this.restPing = ping;
+  public CompletableFuture<Void> update() {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    client
+        .getRestPing()
+        .queue(
+            ping -> {
+              this.gatewayPing = client.getGatewayPing();
+              this.restPing = ping;
 
-            future.complete(null);
-        });
-        return future;
-    }
+              future.complete(null);
+            });
+    return future;
+  }
 }

@@ -21,46 +21,49 @@ import yt.graven.gravensupport.utils.messages.Embeds;
 @RequiredArgsConstructor
 public class ReportUserModalHandler implements InteractionAction<ModalInteractionEvent> {
 
-    private final TicketManager manager;
-    private final Embeds embeds;
+  private final TicketManager manager;
+  private final Embeds embeds;
 
-    @Override
-    public void run(ModalInteractionEvent event) throws TicketException, IOException {
+  @Override
+  public void run(ModalInteractionEvent event) throws TicketException, IOException {
 
-        InteractionHook reply = event.deferReply(true).complete();
+    InteractionHook reply = event.deferReply(true).complete();
 
-        String userId = event.getInteraction().getValue("user-id").getAsString();
-        String reason = event.getInteraction().getValue("reason").getAsString();
+    String userId = event.getInteraction().getValue("user-id").getAsString();
+    String reason = event.getInteraction().getValue("reason").getAsString();
 
-        try {
-            MiscUtil.parseSnowflake(userId);
-        } catch (Exception e) {
-            reply.editOriginalEmbeds(embeds.error("L'identifiant de l'utilisateur fourni est invalide !")
-                            .build())
-                    .queue();
-            return;
-        }
+    try {
+      MiscUtil.parseSnowflake(userId);
+    } catch (Exception e) {
+      reply
+          .editOriginalEmbeds(
+              embeds.error("L'identifiant de l'utilisateur fourni est invalide !").build())
+          .queue();
+      return;
+    }
 
-        PrivateChannel channel = event.getChannel().asPrivateChannel();
-        Optional<Ticket> ticket = manager.get(channel.getUser());
+    PrivateChannel channel = event.getChannel().asPrivateChannel();
+    Optional<Ticket> ticket = manager.get(channel.getUser());
 
-        if (ticket.isEmpty()) {
-            ticket = Optional.of(manager.create(channel.getUser()));
-        }
+    if (ticket.isEmpty()) {
+      ticket = Optional.of(manager.create(channel.getUser()));
+    }
 
-        Ticket sureTicket = ticket.get();
-        if (sureTicket.isOpened()) {
-            reply.editOriginalEmbeds(embeds.ticketAlreadyExists(true).build()).queue();
-            return;
-        }
+    Ticket sureTicket = ticket.get();
+    if (sureTicket.isOpened()) {
+      reply.editOriginalEmbeds(embeds.ticketAlreadyExists(true).build()).queue();
+      return;
+    }
 
-        sureTicket.openOnServer(false, null, new TicketOpeningReason.UserReport(userId, reason));
+    sureTicket.openOnServer(false, null, new TicketOpeningReason.UserReport(userId, reason));
 
-        reply.editOriginalEmbeds(new EmbedBuilder()
-                        .setColor(Color.GREEN)
-                        .setTitle("Ticket ouvert !")
-                        .setDescription(
-                                """
+    reply
+        .editOriginalEmbeds(
+            new EmbedBuilder()
+                .setColor(Color.GREEN)
+                .setTitle("Ticket ouvert !")
+                .setDescription(
+                    """
                                         Le ticket a bien été ouvert ! Vous pouvez désormais communiquer avec la modération.
 
                                         **Rappel :**
@@ -69,8 +72,8 @@ public class ReportUserModalHandler implements InteractionAction<ModalInteractio
 
                                         Si vous avez des preuves pour étayer votre signalement, vous pouvez désormais les envoyer.
                                         """
-                                        .formatted(userId, userId, reason))
-                        .build())
-                .queue();
-    }
+                        .formatted(userId, userId, reason))
+                .build())
+        .queue();
+  }
 }

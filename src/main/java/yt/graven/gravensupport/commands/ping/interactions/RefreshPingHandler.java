@@ -12,15 +12,13 @@ import yt.graven.gravensupport.utils.messages.Embeds;
 @RequiredArgsConstructor
 public class RefreshPingHandler implements InteractionAction<ButtonInteractionEvent> {
 
-    private final PingComputer pingComputer;
-    private final Embeds embeds;
+  private final PingComputer pingComputer;
+  private final Embeds embeds;
 
-    @Override
-    public void run(ButtonInteractionEvent event) {
-        InteractionHook edit = event.deferEdit().complete();
+  @Override
+  public void run(ButtonInteractionEvent event) {
+    InteractionHook edit = event.deferEdit().complete();
 
-        pingComputer
-                .update()
-                .thenAccept(ignored -> embeds.ping(pingComputer).editReply(edit).queue());
-    }
+    pingComputer.update().thenAccept(ignored -> embeds.ping(pingComputer).editReply(edit).queue());
+  }
 }

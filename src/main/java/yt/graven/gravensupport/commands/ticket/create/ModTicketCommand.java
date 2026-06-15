@@ -28,110 +28,125 @@ import yt.graven.gravensupport.utils.messages.Embeds;
 @RequiredArgsConstructor
 public class ModTicketCommand implements ICommand {
 
-    private final Embeds embeds;
-    private final TicketManager ticketManager;
+  private final Embeds embeds;
+  private final TicketManager ticketManager;
 
-    @Override
-    public String getName() {
-        return "modticket";
+  @Override
+  public String getName() {
+    return "modticket";
+  }
+
+  @Override
+  public SlashCommandData getSlashCommandData() {
+    return Commands.slash("modticket", "Gestion des tickets par les modérateurs")
+        .setGuildOnly(true)
+        .setDefaultPermissions(DefaultMemberPermissions.DISABLED)
+        .addSubcommands(
+            new SubcommandData("open-with", "Ouvrir un ticket avec un utilisateur en particulier")
+                .addOption(OptionType.USER, "user", "L'utilisateur avec qui ouvrir le ticket", true)
+                .addOption(
+                    OptionType.STRING,
+                    "reason",
+                    "La raison pour laquelle le ticket est ouvert",
+                    true),
+            new SubcommandData("refresh-open", "Rafraichir les tickets ouverts"),
+            new SubcommandData("force-close", "Forcer le bot à croire que le ticket est fermé")
+                .addOption(
+                    OptionType.USER, "user", "L'utilisateur dont le ticket doit être fermé", true));
+  }
+
+  @Override
+  public void run(SlashCommandInteractionEvent event)
+      throws TicketException, IOException, CommandCancelledException {
+    if (event.getSubcommandName().equals("open-with")) {
+      this.runWithSelectedUser(event);
+      return;
     }
 
-    @Override
-    public SlashCommandData getSlashCommandData() {
-        return Commands.slash("modticket", "Gestion des tickets par les modérateurs")
-                .setGuildOnly(true)
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED)
-                .addSubcommands(
-                        new SubcommandData("open-with", "Ouvrir un ticket avec un utilisateur en particulier")
-                                .addOption(OptionType.USER, "user", "L'utilisateur avec qui ouvrir le ticket", true)
-                                .addOption(
-                                        OptionType.STRING,
-                                        "reason",
-                                        "La raison pour laquelle le ticket est ouvert",
-                                        true),
-                        new SubcommandData("refresh-open", "Rafraichir les tickets ouverts"),
-                        new SubcommandData("force-close", "Forcer le bot à croire que le ticket est fermé")
-                                .addOption(
-                                        OptionType.USER, "user", "L'utilisateur dont le ticket doit être fermé", true));
+    event.reply("Cette commande n'est pas encore implémentée.").setEphemeral(true).queue();
+  }
+
+  private void runWithSelectedUser(SlashCommandInteractionEvent event)
+      throws IOException, TicketException {
+    InteractionHook reply = event.deferReply(true).complete();
+    if (!Arrays.asList(TEXT, GUILD_PRIVATE_THREAD, GUILD_PUBLIC_THREAD)
+        .contains(event.getChannelType())) {
+      embeds
+          .errorMessage("Cette commande doit être exécutée sur un serveur.")
+          .editReply(reply)
+          .queue();
+      return;
     }
 
-    @Override
-    public void run(SlashCommandInteractionEvent event) throws TicketException, IOException, CommandCancelledException {
-        if (event.getSubcommandName().equals("open-with")) {
-            this.runWithSelectedUser(event);
-            return;
-        }
-
-        event.reply("Cette commande n'est pas encore implémentée.")
-                .setEphemeral(true)
-                .queue();
+    assert event.getMember() != null;
+    if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
+      embeds
+          .errorMessage(
+              "Vous n'avez pas la permission pour exécuter cette commande (`BAN_MEMBERS`).")
+          .editReply(reply)
+          .queue();
+      return;
     }
 
-    private void runWithSelectedUser(SlashCommandInteractionEvent event) throws IOException, TicketException {
-        InteractionHook reply = event.deferReply(true).complete();
-        if (!Arrays.asList(TEXT, GUILD_PRIVATE_THREAD, GUILD_PUBLIC_THREAD).contains(event.getChannelType())) {
-            embeds.errorMessage("Cette commande doit être exécutée sur un serveur.")
-                    .editReply(reply)
-                    .queue();
-            return;
-        }
+    OptionMapping userOption = event.getOption("user");
+    OptionMapping reasonOption = event.getOption("reason");
 
-        assert event.getMember() != null;
-        if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
-            embeds.errorMessage("Vous n'avez pas la permission pour exécuter cette commande (`BAN_MEMBERS`).")
-                    .editReply(reply)
-                    .queue();
-            return;
-        }
+    if (userOption == null) {
+      embeds
+          .errorMessage("L'option `%s` est obligatoire.".formatted("user"))
+          .editReply(reply)
+          .queue();
+      return;
+    }
+    if (reasonOption == null) {
+      embeds
+          .errorMessage("L'option `%s` est obligatoire.".formatted("reason"))
+          .editReply(reply)
+          .queue();
+      return;
+    }
 
-        OptionMapping userOption = event.getOption("user");
-        OptionMapping reasonOption = event.getOption("reason");
+    User user = userOption.getAsUser();
+    String reason = reasonOption.getAsString();
 
-        if (userOption == null) {
-            embeds.errorMessage("L'option `%s` est obligatoire.".formatted("user"))
-                    .editReply(reply)
-                    .queue();
-            return;
-        }
-        if (reasonOption == null) {
-            embeds.errorMessage("L'option `%s` est obligatoire.".formatted("reason"))
-                    .editReply(reply)
-                    .queue();
-            return;
-        }
+    if (ticketManager.exists(user)) {
+      embeds
+          .ticketAlreadyExistsMessage(
+              ticketManager
+                  .get(user)
+                  .orElseThrow(
+                      () -> new TicketException("Ticket not found for user " + user.getId()))
+                  .getTo(),
+              false)
+          .editReply(reply)
+          .queue();
+      return;
+    }
 
-        User user = userOption.getAsUser();
-        String reason = reasonOption.getAsString();
+    if (user.getMutualGuilds().isEmpty()) {
+      embeds
+          .errorMessage(
+              String.format(
+                  "L'utilisateur %s n'a aucun serveur en commun avec le bot de ticket.",
+                  user.getAsTag()))
+          .editReply(reply)
+          .queue();
+      return;
+    }
 
-        if (ticketManager.exists(user)) {
-            embeds.ticketAlreadyExistsMessage(
-                            ticketManager
-                                    .get(user)
-                                    .orElseThrow(() -> new TicketException("Ticket not found for user " + user.getId()))
-                                    .getTo(),
-                            false)
-                    .editReply(reply)
-                    .queue();
-            return;
-        }
+    Ticket ticket = ticketManager.create(user);
+    ticket.forceOpening(event.getUser(), new TicketOpeningReason.Simple(reason));
 
-        if (user.getMutualGuilds().isEmpty()) {
-            embeds.errorMessage(String.format(
-                            "L'utilisateur %s n'a aucun serveur en commun avec le bot de ticket.", user.getAsTag()))
-                    .editReply(reply)
-                    .queue();
-            return;
-        }
-
-        Ticket ticket = ticketManager.create(user);
-        ticket.forceOpening(event.getUser(), new TicketOpeningReason.Simple(reason));
-
-        // spotless::off
-        embeds.successMessage(String.format("Le ticket avec %s a bien été ouvert.", user.getAsMention()))
-                .addActionRow(actionRow -> actionRow.addButton(button ->
+    // spotless::off
+    embeds
+        .successMessage(String.format("Le ticket avec %s a bien été ouvert.", user.getAsMention()))
+        .addActionRow(
+            actionRow ->
+                actionRow.addButton(
+                    button ->
                         button.setText("Aller au ticket").setLink(ticket.getTo().getJumpUrl())))
-                .editReply(reply)
-                .queue();
-        // spotless:on
-    }
+        .editReply(reply)
+        .queue();
+    // spotless:on
+  }
 }
