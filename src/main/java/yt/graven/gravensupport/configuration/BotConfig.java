@@ -55,8 +55,13 @@ public class BotConfig {
             throw new BotStartupException("No token provided!");
         }
 
-        EnumSet<GatewayIntent> allIntentsBecauseWhyNot = EnumSet.allOf(GatewayIntent.class);
-        return JDABuilder.create(allIntentsBecauseWhyNot).setToken(token).build();
+        EnumSet<GatewayIntent> intents = EnumSet.of(
+                GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.DIRECT_MESSAGES,
+                GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.MESSAGE_CONTENT
+        );
+        return JDABuilder.create(intents).setToken(token).build();
     }
 
     private Path getDefaultConfigFromInsideJar() {
