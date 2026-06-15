@@ -42,18 +42,20 @@ Les données peuvent être transmises aux destinataires suivants :
 
 - **Discord Inc.** : les messages transités par le Bot utilisent l'API Discord et les webhooks Discord. Consultez la [politique de confidentialité de Discord](https://discord.com/privacy).
 - **Équipe de modération du serveur** : les modérateurs ayant accès aux salons de tickets et aux salons d'archives peuvent consulter l'ensemble des données échangées.
-- **Service de visualisation de tickets (optionnel)** : si configuré, une URL vers le rapport JSON peut être générée via un service externe défini par `config.reader.base_url`.
+- **Service de visualisation de tickets (optionnel)** : si configuré, une URL vers le rapport JSON peut être générée à destination d'un outil de lecture local (défini par `config.reader.base_url`). Aucune donnée n'est transmise à un service tiers.
 
 ## 7. Stockage et conservation
 
-| Type de stockage | Durée de conservation |
+**Le Bot ne stocke aucune donnée de manière persistante.** Les données sont conservées uniquement :
+
+| Support | Durée de conservation |
 |---|---|
 | Mémoire vive (HashMap) | Durée de fonctionnement du Bot. Les tickets en cours sont perdus au redémarrage. |
 | Salons Discord (tickets) | Durée d'ouverture du ticket. Les salons sont supprimés à la fermeture. |
-| Rapports JSON (archives) | Durée indéterminée dans le salon d'archives Discord. La modération peut les supprimer manuellement. |
-| Fichiers joints ré-hébergés | Durée indéterminée dans le salon d'attachements. La modération peut les supprimer manuellement. |
+| Rapports JSON (archives Discord) | Durée indéterminée dans Discord. La modération peut les supprimer manuellement. |
+| Fichiers joints ré-hébergés (Discord) | Durée indéterminée dans Discord. La modération peut les supprimer manuellement. |
 
-**Aucune base de données externe** n'est utilisée. Les données n'existent que dans l'infrastructure Discord et la mémoire du Bot.
+**Aucune base de données, aucun fichier, et aucun stockage persistant propre au Bot.** Les rapports et fichiers joints sont hébergés exclusivement sur l'infrastructure de Discord, et non par le Bot.
 
 ## 8. Sécurité
 
