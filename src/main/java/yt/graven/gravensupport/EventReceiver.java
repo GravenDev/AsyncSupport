@@ -90,8 +90,8 @@ public class EventReceiver extends ListenerAdapter {
   public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 
     try {
-      if(event.getMessage().getType() == MessageType.CHANNEL_PINNED_ADD
-              && event.getChannel().asTextChannel().getParentCategoryId().equals(ticketCategoryId)) {
+      if (event.getMessage().getType() == MessageType.CHANNEL_PINNED_ADD
+          && event.getChannel().asTextChannel().getParentCategoryId().equals(ticketCategoryId)) {
         event.getMessage().delete().queue();
       }
     } catch (Exception ignored) {
