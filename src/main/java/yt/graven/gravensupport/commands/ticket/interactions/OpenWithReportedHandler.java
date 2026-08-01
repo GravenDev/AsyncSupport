@@ -5,11 +5,11 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import org.springframework.stereotype.Component;
 import yt.graven.gravensupport.commands.ticket.Ticket;
 import yt.graven.gravensupport.commands.ticket.TicketManager;
@@ -30,7 +30,7 @@ public class OpenWithReportedHandler implements InteractionAction<ButtonInteract
   @Override
   public void run(ButtonInteractionEvent event) throws TicketException, IOException {
 
-    String userId = event.getButton().getId().split(";")[1];
+    String userId = event.getButton().getCustomId().split(";")[1];
     User user = jda.retrieveUserById(userId).complete();
 
     if (manager.exists(user)) {

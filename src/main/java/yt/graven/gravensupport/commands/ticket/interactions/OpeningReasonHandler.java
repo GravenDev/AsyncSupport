@@ -5,15 +5,15 @@ import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 import org.springframework.stereotype.Component;
 import yt.graven.gravensupport.commands.ticket.Ticket;
 import yt.graven.gravensupport.commands.ticket.TicketManager;
@@ -52,9 +52,9 @@ public class OpeningReasonHandler implements InteractionAction<StringSelectInter
       Modal modal =
           Modal.create("op-other-reason", "Pourquoi ouvrez-vous un ticket ?")
               .addComponents(
-                  ActionRow.of(
-                      TextInput.create("reason", "Raison (en quelques mots)", TextInputStyle.SHORT)
-                          .build()))
+                  Label.of(
+                      "Raison (en quelques mots)",
+                      TextInput.create("reason", TextInputStyle.SHORT).build()))
               .build();
 
       event.replyModal(modal).queue();

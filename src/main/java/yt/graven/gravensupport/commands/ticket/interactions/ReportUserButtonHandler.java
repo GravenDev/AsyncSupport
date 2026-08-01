@@ -2,10 +2,11 @@ package yt.graven.gravensupport.commands.ticket.interactions;
 
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 import org.springframework.stereotype.Component;
 import yt.graven.gravensupport.utils.exceptions.TicketException;
 import yt.graven.gravensupport.utils.interactions.InteractionAction;
@@ -17,19 +18,24 @@ public class ReportUserButtonHandler implements InteractionAction<ButtonInteract
   @Override
   public void run(ButtonInteractionEvent event) throws TicketException, IOException {
     // spotless:off
-        Modal modal = Modal.create("op-report-user", "Signaler un utilisateur")
-                .addActionRow(TextInput.create("user-id", "ID de l'utilisateur", TextInputStyle.SHORT)
-                        .setPlaceholder("Identifiant de l'utilisateur")
-                        .setRequiredRange(15, 20)
-                        .setRequired(true)
-                        .build()
-                )
-                .addActionRow(TextInput.create("reason", "Raison", TextInputStyle.PARAGRAPH)
-                        .setPlaceholder("""
+        Modal modal =
+            Modal.create("op-report-user", "Signaler un utilisateur")
+                .addComponents(
+                    Label.of(
+                        "ID de l'utilisateur",
+                        TextInput.create("user-id", TextInputStyle.SHORT)
+                            .setPlaceholder("Identifiant de l'utilisateur")
+                            .setRequiredRange(15, 20)
+                            .setRequired(true)
+                            .build()),
+                    Label.of(
+                        "Raison",
+                        TextInput.create("reason", TextInputStyle.PARAGRAPH)
+                            .setPlaceholder(
+                                """
                                 Décrivez en quelques mots la raison de votre signalement.
                                 """)
-                        .build()
-                )
+                            .build()))
                 .build();
         // spotless:on
 

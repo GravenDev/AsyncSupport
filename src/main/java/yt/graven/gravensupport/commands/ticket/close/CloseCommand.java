@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -35,7 +36,7 @@ public class CloseCommand implements ICommand {
   public SlashCommandData getSlashCommandData() {
     return Commands.slash("close", "Ferme le ticket actuel")
         .setDefaultPermissions(DefaultMemberPermissions.DISABLED)
-        .setGuildOnly(true);
+        .setContexts(InteractionContextType.GUILD);
   }
 
   @Override

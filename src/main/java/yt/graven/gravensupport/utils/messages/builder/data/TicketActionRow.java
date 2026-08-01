@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 
 public class TicketActionRow {
 
-  private final List<ItemComponent> components = new ArrayList<>();
+  private final List<ActionRowChildComponent> components = new ArrayList<>();
 
   public TicketActionRow() {}
 
-  public TicketActionRow(ItemComponent... components) {
+  public TicketActionRow(ActionRowChildComponent... components) {
     this.components.addAll(List.of(components));
   }
 

@@ -4,10 +4,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.springframework.stereotype.Component;
 import yt.graven.gravensupport.utils.interactions.InteractionAction;
 
@@ -26,7 +27,7 @@ public class DenyMessageHandler implements InteractionAction<ButtonInteractionEv
     embedList.add(embed);
     event
         .deferEdit()
-        .setActionRow(Button.secondary("delete", Emoji.fromUnicode("🗑️")))
+        .setComponents(ActionRow.of(Button.secondary("delete", Emoji.fromUnicode("🗑️"))))
         .setEmbeds(embedList)
         .queue();
   }

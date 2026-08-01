@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -36,7 +37,7 @@ public class IdCommand implements ICommand {
   @Override
   public SlashCommandData getSlashCommandData() {
     return Commands.slash("id", "Affiche l'ID du ticket actuel")
-        .setGuildOnly(true)
+        .setContexts(InteractionContextType.GUILD)
         .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
   }
 

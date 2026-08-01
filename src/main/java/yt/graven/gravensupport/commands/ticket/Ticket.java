@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -25,7 +26,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.ICommandReference;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -479,7 +479,7 @@ public class Ticket {
                       .queue(
                           oldestPinnedMessage -> {
                             textChannel
-                                .unpinMessageById(oldestPinnedMessage.getId())
+                                .unpinMessageById(oldestPinnedMessage.getMessage().getId())
                                 .queue(nothing -> pinMessage(textChannel, msg).queue());
                           });
                 });

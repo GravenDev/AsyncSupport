@@ -5,6 +5,9 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -13,8 +16,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import org.springframework.stereotype.Component;
@@ -113,33 +114,35 @@ public class ConfirmMessageHandler implements InteractionAction<ButtonInteractio
                 fInteraction.deleteOriginal().queue();
                 embedMessage
                     .editMessageEmbeds(embed.build())
-                    .setActionRow(
-                        Button.of(
-                            ButtonStyle.SUCCESS,
-                            "edit-message",
-                            "Modifier le message",
-                            Emoji.fromUnicode("✏️")),
-                        Button.of(
-                            ButtonStyle.DANGER,
-                            "delete-message",
-                            "Supprimer le message",
-                            Emoji.fromUnicode("🗑️")))
+                    .setComponents(
+                        ActionRow.of(
+                            Button.of(
+                                ButtonStyle.SUCCESS,
+                                "edit-message",
+                                "Modifier le message",
+                                Emoji.fromUnicode("✏️")),
+                            Button.of(
+                                ButtonStyle.DANGER,
+                                "delete-message",
+                                "Supprimer le message",
+                                Emoji.fromUnicode("🗑️"))))
                     .queue();
               } else {
                 event
                     .deferEdit()
                     .setEmbeds(embed.build())
-                    .setActionRow(
-                        Button.of(
-                            ButtonStyle.SUCCESS,
-                            "edit-message",
-                            "Modifier le message",
-                            Emoji.fromUnicode("✏️")),
-                        Button.of(
-                            ButtonStyle.DANGER,
-                            "delete-message",
-                            "Supprimer le message",
-                            Emoji.fromUnicode("🗑️")))
+                    .setComponents(
+                        ActionRow.of(
+                            Button.of(
+                                ButtonStyle.SUCCESS,
+                                "edit-message",
+                                "Modifier le message",
+                                Emoji.fromUnicode("✏️")),
+                            Button.of(
+                                ButtonStyle.DANGER,
+                                "delete-message",
+                                "Supprimer le message",
+                                Emoji.fromUnicode("🗑️"))))
                     .queue();
               }
             })
@@ -163,7 +166,7 @@ public class ConfirmMessageHandler implements InteractionAction<ButtonInteractio
                       .queue(
                           oldestPinnedMessage ->
                               channel
-                                  .unpinMessageById(oldestPinnedMessage.getId())
+                                  .unpinMessageById(oldestPinnedMessage.getMessage().getId())
                                   .queue(nothing -> message.pin().queue()));
                 });
 

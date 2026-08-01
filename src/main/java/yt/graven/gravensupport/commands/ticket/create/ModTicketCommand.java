@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -39,7 +40,7 @@ public class ModTicketCommand implements ICommand {
   @Override
   public SlashCommandData getSlashCommandData() {
     return Commands.slash("modticket", "Gestion des tickets par les modérateurs")
-        .setGuildOnly(true)
+        .setContexts(InteractionContextType.GUILD)
         .setDefaultPermissions(DefaultMemberPermissions.DISABLED)
         .addSubcommands(
             new SubcommandData("open-with", "Ouvrir un ticket avec un utilisateur en particulier")

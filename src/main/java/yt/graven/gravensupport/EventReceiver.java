@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -50,10 +51,13 @@ public class EventReceiver extends ListenerAdapter {
   private final Embeds embeds;
 
   private boolean loaded = false;
+  private String ticketCategoryId;
 
   @Override
   public void onReady(@NotNull ReadyEvent event) {
     if (loaded) return;
+
+    ticketCategoryId = config.getString("config.ticket_guild.tickets_category");
 
     log.info("Bot preparing - Initializing commands...");
     registry.loadAll();
@@ -84,6 +88,15 @@ public class EventReceiver extends ListenerAdapter {
 
   @Override
   public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+
+    try {
+      if(event.getMessage().getType() == MessageType.CHANNEL_PINNED_ADD
+              && event.getChannel().asTextChannel().getParentCategoryId().equals(ticketCategoryId)) {
+        event.getMessage().delete().queue();
+      }
+    } catch (Exception ignored) {
+    }
+
     if (event.getAuthor().isBot() || event.getAuthor().isSystem()) return;
 
     /*
@@ -132,7 +145,7 @@ public class EventReceiver extends ListenerAdapter {
 
   @Override
   public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-    ButtonActions.getFromActionId(event.getButton().getId().split(";")[0])
+    ButtonActions.getFromActionId(event.getButton().getCustomId().split(";")[0])
         .ifPresent(
             a -> {
               try {
@@ -145,7 +158,7 @@ public class EventReceiver extends ListenerAdapter {
 
   @Override
   public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
-    SelectionMenuActions.getFromActionId(event.getSelectMenu().getId().split(";")[0])
+    SelectionMenuActions.getFromActionId(event.getSelectMenu().getCustomId().split(";")[0])
         .ifPresent(
             a -> {
               try {
