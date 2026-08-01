@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'com.gradleup.shadow' version '9.4.1'
-    id 'io.freefair.lombok' version '6.6.3'
+    id 'io.freefair.lombok' version '9.5.0'
     id 'com.diffplug.spotless' version '8.6.0'
 }
 
@@ -10,8 +10,8 @@ group = 'yt.graven'
 version = '1.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -45,7 +45,6 @@ application {
 
 compileJava {
     options.encoding = "UTF-8"
-    options.compilerArgs += "--enable-preview"
 }
 
 jar {
@@ -53,12 +52,6 @@ jar {
         attributes('Main-Class': 'yt.graven.gravensupport.Main')
     }
 }
-
-
-[tasks.withType(Test), tasks.withType(JavaExec)].flatten().forEach {
-    it.jvmArgs += "--enable-preview"
-}
-
 
 spotless {
     java {
