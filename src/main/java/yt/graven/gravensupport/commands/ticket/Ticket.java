@@ -132,6 +132,7 @@ public class Ticket {
                                 .addOption(Emoji.fromUnicode("📝"), "Signalement utilisateur", "op-user-report")
                                 .addOption(Emoji.fromUnicode("⛔"), "Contester une sanction", "op-unban")
                                 .addOption(Emoji.fromUnicode("✨"), "Proposer une amélioration", "op-enhancement")
+                                .addOption(Emoji.fromUnicode("📊"), "Poster un sondage communautaire", "op-community-poll")
                                 .addOption(Emoji.fromUnicode("\uD83D\uDCAC"), "Autre", "op-other")
                         )
                 )
