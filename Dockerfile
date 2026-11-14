@@ -5,7 +5,7 @@ COPY ./ /build
 
 RUN gradle shadowjar
 
-FROM amazoncorretto:21-alpine3.21
+FROM amazoncorretto:25-alpine3.21
 
 WORKDIR /home/GravenSupport
 COPY --from=builder /build/build/libs/*-all.jar /GravenSupport.jar
