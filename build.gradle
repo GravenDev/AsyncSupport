@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     implementation "net.dv8tion:JDA:6.5.0"
-    implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.7.2'
+    implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.8.5'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.springframework:spring-context:5.3.39'
     implementation 'javax.inject:javax.inject:1'
